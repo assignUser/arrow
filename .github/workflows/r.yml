@@ -235,8 +235,6 @@ jobs:
     needs: [windows-cpp]
     name: AMD64 Windows R ${{ matrix.config.rversion }} RTools ${{ matrix.config.rtools }}
     runs-on: windows-2019
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 75
     strategy:
@@ -250,6 +248,7 @@ jobs:
     env:
       ARROW_R_CXXFLAGS: "-Werror"
       _R_CHECK_TESTS_NLINES_: 0
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
     steps:
       - run: git config --global core.autocrlf false
       - name: Checkout Arrow
