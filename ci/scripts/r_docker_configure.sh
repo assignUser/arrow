@@ -58,7 +58,7 @@ if [ "$RHUB_PLATFORM" = "linux-x86_64-fedora-clang" ]; then
 fi
 
 # Adding sys req for lintr
-if [ "$RHUB_PLATFORM" = "debian-gcc-devel" ]; then
+if [ "$RHUB_PLATFORM" = "linux-x86_64-debian-gcc" ]; then
   $PACKAGE_MANAGER install -y libxml2-dev
 fi
 
