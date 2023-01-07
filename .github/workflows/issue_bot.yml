@@ -36,5 +36,31 @@ jobs:
       - uses: actions/github-script@v6
         with:
           script: |
-            let components = context.payload.issue.body.split('Component(s)')[1].split(', ')
-            console.log(components)
+            let split_body = context.payload.issue.body.split('^### Component(s)');
+
+            if (split_body.length != 2) throw new Error('No components found!');
+
+            let components = split_body[1]
+              .split(',')
+              .map(component => component.trim());
+
+            let component_labels = {
+              labels: components.map(component => "Component: " + component)
+            };
+
+            let repo_labels = await octokit.rest.issues.listLabelsForRepo({
+              "owner": context.repo.owner,
+              "repo": context.repo.repo,
+            });
+
+            // this removes non-existent labels
+            component_labels.labels = component_labels.labels.filter(
+              label => repo_labels.data.some(repo_label => repo_label.name === label)
+            );
+
+            await octokit.rest.issues.addLabels({
+              "owner": context.repo.owner,
+              "repo": context.repo.repo,
+              "issue_number": context.payload.issue.number,
+              "labels": component_labels,
+            });
