@@ -2781,6 +2781,8 @@ macro(build_absl)
       cordz_handle
       cordz_info
       cordz_sample_token
+      crc_internal
+      crc32c
       debugging_internal
       demangle_internal
       examine_stack
@@ -4206,6 +4208,8 @@ macro(build_google_cloud_cpp_storage)
                PROPERTY INTERFACE_LINK_LIBRARIES
                         absl::base
                         absl::cord
+                        absl::crc_internal
+                        absl::crc32c
                         absl::memory
                         absl::optional
                         absl::span
