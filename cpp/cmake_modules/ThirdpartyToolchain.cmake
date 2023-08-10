@@ -3091,6 +3091,29 @@ macro(build_absl)
   set_property(TARGET absl::core_headers PROPERTY INTERFACE_LINK_LIBRARIES absl::config)
   set_property(TARGET absl::counting_allocator PROPERTY INTERFACE_LINK_LIBRARIES
                                                         absl::config)
+  set_property(TARGET absl::crc_internal
+               PROPERTY INTERFACE_LINK_LIBRARIES
+                        absl::crc_cpu_detect
+                        absl::base
+                        absl::config
+                        absl::core_headers
+                        absl::dynamic_annotations
+                        absl::endian
+                        absl::prefetch
+                        absl::raw_logging_internal
+                        absl::memory
+                        absl::bits)
+  set_property(TARGET absl::crc32c
+               PROPERTY INTERFACE_LINK_LIBRARIES
+                        absl::crc_cpu_detect
+                        absl::crc_internal
+                        absl::non_temporal_memcpy
+                        absl::config
+                        absl::core_headers
+                        absl::dynamic_annotations
+                        absl::endian
+                        absl::prefetch
+                        absl::strings)
   set_property(TARGET absl::debugging PROPERTY INTERFACE_LINK_LIBRARIES absl::stacktrace
                                                absl::leak_check)
   set_property(TARGET absl::debugging_internal
