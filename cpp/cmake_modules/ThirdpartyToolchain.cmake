@@ -2781,6 +2781,7 @@ macro(build_absl)
       cordz_handle
       cordz_info
       cordz_sample_token
+      crc_cpu_detect
       crc_internal
       crc32c
       debugging_internal
@@ -2890,7 +2891,10 @@ macro(build_absl)
       node_hash_set
       numeric
       numeric_representation
+      non_temporal_arm_intrinsics
+      non_temporal_memcpy
       optional
+      prefetch
       pretty_function
       random_bit_gen_ref
       random_internal_distribution_caller
@@ -3091,6 +3095,7 @@ macro(build_absl)
   set_property(TARGET absl::core_headers PROPERTY INTERFACE_LINK_LIBRARIES absl::config)
   set_property(TARGET absl::counting_allocator PROPERTY INTERFACE_LINK_LIBRARIES
                                                         absl::config)
+  set_property(TARGET absl::crc_cpu_detect PROPERTY INTERFACE_LINK_LIBRARIES absl::base absl::config)
   set_property(TARGET absl::crc_internal
                PROPERTY INTERFACE_LINK_LIBRARIES
                         absl::crc_cpu_detect
@@ -3387,6 +3392,8 @@ macro(build_absl)
                         absl::raw_hash_set
                         absl::algorithm_container
                         absl::memory)
+  set_property(TARGET absl::non_temporal_arm_intrinsics PROPERTY INTERFACE_LINK_LIBRARIES absl::config)
+  set_property(TARGET absl::non_temporal_memcpy PROPERTY INTERFACE_LINK_LIBRARIES absl::non_temporal_arm_intrinsics absl::config absl::core_headers)
   set_property(TARGET absl::numeric PROPERTY INTERFACE_LINK_LIBRARIES absl::int128)
   set_property(TARGET absl::numeric_representation PROPERTY INTERFACE_LINK_LIBRARIES
                                                             absl::config)
@@ -3402,6 +3409,7 @@ macro(build_absl)
   set_property(TARGET absl::periodic_sampler
                PROPERTY INTERFACE_LINK_LIBRARIES absl::core_headers
                         absl::exponential_biased)
+  set_property(TARGET absl::prefetch PROPERTY INTERFACE_LINK_LIBRARIES absl::config)
   set_property(TARGET absl::random_bit_gen_ref
                PROPERTY INTERFACE_LINK_LIBRARIES
                         absl::core_headers
