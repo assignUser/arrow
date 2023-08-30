@@ -203,7 +203,8 @@ compile_test_program <- function(code) {
     R_CMD_config("CXX17FLAGS"),
     R_CMD_config("CXX17STD"),
     "-E",
-    "-xc++"
+    "-xc++",
+    "-I$OPENSSL_ROOT_DIR"
   )
   suppressWarnings(system2("echo", sprintf('"%s" | %s -', code, runner), stdout = FALSE, stderr = TRUE))
 }

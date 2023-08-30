@@ -147,11 +147,11 @@ find_or_build_libarrow () {
     find_arrow
     if [ "$_LIBARROW_FOUND" = "false" ]; then
       # If we haven't found a suitable version of libarrow, build it
-      if [ "$UNAME" = "Darwin" ] && ! echo $VERSION | grep -q "000"; then
-        # Only autobrew on release version (for testing, use FORCE_AUTOBREW above)
-        # (dev versions end in .9000, and nightly gets something like .10000xxx)
-        do_autobrew
-      else
+      # if [ "$UNAME" = "Darwin" ] && ! echo $VERSION | grep -q "000"; then
+      #   # Only autobrew on release version (for testing, use FORCE_AUTOBREW above)
+      #   # (dev versions end in .9000, and nightly gets something like .10000xxx)
+      #   do_autobrew
+      # else
         do_bundled_build
       fi
     fi
