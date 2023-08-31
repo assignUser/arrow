@@ -153,7 +153,7 @@ find_or_build_libarrow () {
       #   do_autobrew
       # else
         do_bundled_build
-      fi
+      # fi
     fi
   fi
 }

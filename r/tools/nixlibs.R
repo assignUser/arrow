@@ -26,7 +26,7 @@ test_mode <- exists("TESTING")
 if (test_mode && is.na(VERSION)) {
   VERSION <- "8.0.0.9000"
 }
-
+on_macos <- tolower(Sys.info()[["sysname"]]) %in% "darwin"
 dev_version <- package_version(VERSION)[1, 4]
 
 # Small dev versions are added for R-only changes during CRAN submission.
@@ -449,7 +449,6 @@ build_libarrow <- function(src_dir, dst_dir) {
   }
 
   env_var_list <- with_cloud_support(env_var_list)
-
   # turn_off_all_optional_features() needs to happen after
   # with_cloud_support(), since it might turn features ON.
   thirdparty_deps_unavailable <- !download_ok &&
@@ -496,7 +495,7 @@ ensure_cmake <- function(cmake_minimum_required = "3.16") {
     # If not found, download it
     cat("**** cmake\n")
     CMAKE_VERSION <- Sys.getenv("CMAKE_VERSION", "3.26.4")
-    if (tolower(Sys.info()[["sysname"]]) %in% "darwin") {
+    if (on_macos) {
       postfix <- "-macos-universal.tar.gz"
     } else if (tolower(Sys.info()[["machine"]]) %in% c("arm64", "aarch64")) {
       postfix <- "-linux-aarch64.tar.gz"
@@ -528,9 +527,11 @@ ensure_cmake <- function(cmake_minimum_required = "3.16") {
     untar(cmake_tar, exdir = cmake_dir)
     unlink(cmake_tar)
     options(.arrow.cleanup = c(getOption(".arrow.cleanup"), cmake_dir))
+    app_path <- ifelse(on_macos, "/CMake.app/Contents", "")
     cmake <- paste0(
       cmake_dir,
       "/cmake-", CMAKE_VERSION, sub(".tar.gz", "", postfix, fixed = TRUE),
+      app_path,
       "/bin/cmake"
     )
   } else {
@@ -655,7 +656,9 @@ set_thirdparty_urls <- function(env_var_list) {
   env_var_list
 }
 
-is_feature_requested <- function(env_varname, default = env_is("LIBARROW_MINIMAL", "false")) {
+is_feature_requested <- function(env_varname,
+                                 default = env_is("LIBARROW_MINIMAL", "") ||
+                                            env_is("LIBARROW_MINIMAL", "false")) {
   env_value <- tolower(Sys.getenv(env_varname))
   if (identical(env_value, "off")) {
     # If e.g. ARROW_MIMALLOC=OFF explicitly, override default
