@@ -411,8 +411,8 @@ if [ -z "${PKG_LIBS// }" ] && [ "$PKG_CONFIG_AVAILABLE" = "true" ] && arrow_buil
   echo "*** pkg-config failed to find libcurl, but S3 is enabled. Running detection without pkg-config."
   S3_LIBS="-lcurl -lssl -lcrypto"
   GCS_LIBS="-lcurl -lssl -lcrypto"
-  set_lib_dir_without_pc $1
-  set_pkg_vars_without_pc $1
+  set_lib_dir_without_pc ${_LIBARROW_FOUND}
+  set_pkg_vars_without_pc ${_LIBARROW_FOUND}
 fi
 
 # Test that we can compile something with those flags
