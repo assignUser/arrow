@@ -23,10 +23,10 @@
 #
 # Run this script from the r/ directory of the arrow repo with the version
 # as the first argument$ Rscript tools/update-checksum.R 14.0.0
-
-args <- commandArgs(TRUE)
-VERSION <- args[1]
-tools_root <- ""
+if (!exists("VERSION")) {
+  args <- commandArgs(TRUE)
+  VERSION <- args[1]
+}
 
 if (length(args) != 1) {
   stop("Usage: Rscript tools/update-checksums.R <version>")
@@ -54,7 +54,7 @@ for (path in binary_paths) {
   sha_path <- paste0(path, ".sha512")
   file <- file.path("tools/checksums", sha_path)
   dirname(file) |> dir.create(path = _, recursive = TRUE, showWarnings = FALSE)
-  
+
   cat(paste0("Downloading ", sha_path, "\n"))
   url <- sprintf(artifactory_root, VERSION, sha_path)
   download.file(url, file, quiet = TRUE, cacheOK = FALSE)
