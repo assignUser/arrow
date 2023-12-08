@@ -31,7 +31,7 @@ get_checksum_version <- function() {
 }
 
 if (!is_release) {
-  cli::cli_alert_warning("Skipping releases preparations for dev version.\n")
+  cli::cli_alert_warning("Skipping releases preparations for dev version.")
   return()
 }
 
