@@ -5,7 +5,7 @@ if (git_sc != 0) {
 }
 
 pkg_version <- package_version(desc::desc_get("Version"))
-is_dev <- !is.na(pkg_version[1, 4]) && pkg_version[1, 4] == "9000"
+is_release <- is.na(pkg_version[1, 4]) || pkg_version[1, 4] < "100"
 
 get_checksum_version <- function() {
   url_exists <- function(url) {
@@ -30,7 +30,7 @@ get_checksum_version <- function() {
   version
 }
 
-if (is_dev) {
+if (!is_release) {
   cli::cli_alert_warning("Skipping releases preparations for dev version.\n")
   return()
 }
