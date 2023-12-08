@@ -38,6 +38,13 @@ if (!is_dev) {
   cli::cli_alert_info("Removing badges from Readme.md")
   system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
 
+  cli::cli_alert_info("Running urlchecker")
+  url_res <- urlchecker::url_check()
+  if (nrow(url_res) > 0) {
+    print(url_res)
+    cli::cli_abort("Broken URLs found, can't proceed.")
+  }
+
   VERSION <- get_checksum_version()
   if (!is.na(VERSION)) {
     cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
