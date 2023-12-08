@@ -30,36 +30,35 @@ get_checksum_version <- function() {
   version
 }
 
-if (!is_dev) {
-  cli::cli_alert_info("Installing dependencies")
-  devtools::install_dev_deps(".", upgrade = "never")
-  devtools::install_cran("styler")
-
-  cli::cli_alert_info("Removing badges from Readme.md")
-  system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
-
-  cli::cli_alert_info("Running urlchecker")
-  url_res <- urlchecker::url_check()
-  if (nrow(url_res) > 0) {
-    print(url_res)
-    cli::cli_abort("Broken URLs found, can't proceed.")
-  }
-
-  VERSION <- get_checksum_version()
-  if (!is.na(VERSION)) {
-    cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
-    source("tools/update-checksums.R", local = TRUE)
-  }
-
-  cli::cli_alert_info("Vendoring C++ sources")
-  system2("make", c("sync-cpp"))
-
-  cli::cli_alert_info("Building documentation")
-  system2("make", c("doc"))
-} else {
+if (is_dev) {
   cli::cli_alert_warning("Skipping releases preparations for dev version.\n")
+  return()
 }
 
+cli::cli_alert_info("Installing dependencies")
+devtools::install_dev_deps(".", upgrade = "never")
+devtools::install_cran("styler")
 
+cli::cli_alert_info("Removing badges from Readme.md")
+system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
+
+cli::cli_alert_info("Running urlchecker")
+url_res <- urlchecker::url_check()
+if (nrow(url_res) > 0) {
+  print(url_res)
+  cli::cli_abort("Broken URLs found, can't proceed.")
+}
+
+VERSION <- get_checksum_version()
+if (!is.na(VERSION)) {
+  cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
+  source("tools/update-checksums.R", local = TRUE)
+}
+
+cli::cli_alert_info("Vendoring C++ sources")
+system2("make", c("sync-cpp"))
+
+cli::cli_alert_info("Building documentation")
+system2("make", c("doc"))
 
 cli::cli_alert_success("Done!")
