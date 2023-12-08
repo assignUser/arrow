@@ -4,10 +4,6 @@ if (git_sc != 0) {
   return()
 }
 
-cli::cli_alert_info("Installing dependencies")
-devtools::install_dev_deps(".", upgrade = "never")
-devtools::install_cran("styler")
-
 pkg_version <- package_version(desc::desc_get("Version"))
 is_dev <- !is.na(pkg_version[1, 4]) && pkg_version[1, 4] == "9000"
 
@@ -35,6 +31,10 @@ get_checksum_version <- function() {
 }
 
 if (!is_dev) {
+  cli::cli_alert_info("Installing dependencies")
+  devtools::install_dev_deps(".", upgrade = "never")
+  devtools::install_cran("styler")
+
   cli::cli_alert_info("Removing badges from Readme.md")
   system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
 
@@ -50,14 +50,16 @@ if (!is_dev) {
     cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
     source("tools/update-checksums.R", local = TRUE)
   }
+
+  cli::cli_alert_info("Vendoring C++ sources")
+  system2("make", c("sync-cpp"))
+
+  cli::cli_alert_info("Building documentation")
+  system2("make", c("doc"))
 } else {
   cli::cli_alert_warning("Skipping releases preparations for dev version.\n")
 }
 
-cli::cli_alert_info("Vendoring C++ sources")
-system2("make", c("sync-cpp"))
 
-cli::cli_alert_info("Building documentation")
-system2("make", c("doc"))
 
 cli::cli_alert_success("Done!")
