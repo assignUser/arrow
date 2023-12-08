@@ -1,10 +1,10 @@
 git_sc <- system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = FALSE, stderr = FALSE)
 if (git_sc != 0) {
-  cat("Not in a git repository, skipping bootstrap.R\n")
+  cli::cli_alert_warning("Not in a git repository, skipping bootstrap.R")
   return()
 }
 
-cat("Installing dependencies\n")
+cli::cli_alert_info("Installing dependencies")
 devtools::install_dev_deps(".", upgrade = "never")
 devtools::install_cran("styler")
 
@@ -19,7 +19,7 @@ get_checksum_version <- function() {
   # Run update-checksums.R manually if the checksums already exists
   # but have an unexpected version.
   if (dir.exists("tools/checksums")) {
-    cat("Found existing checksums, skipping download.\n")
+    cli::cli_alert_success("Found existing checksums, skipping download.")
     return(NA)
   }
 
@@ -35,24 +35,22 @@ get_checksum_version <- function() {
 }
 
 if (!is_dev) {
-  cat("Removing badges from Readme.md\n")
+  cli::cli_alert_info("Removing badges from Readme.md")
   system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
 
   VERSION <- get_checksum_version()
   if (!is.na(VERSION)) {
-    cat(sprintf("Updating checksums for libarrow version: %s\n", VERSION))
+    cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
     source("tools/update-checksums.R", local = TRUE)
   }
 } else {
-  cat("Skipping releases preparations for dev version.\n")
+  cli::cli_alert_warning("Skipping releases preparations for dev version.\n")
 }
 
-cat("Vendoring C++ sources\n")
+cli::cli_alert_info("Vendoring C++ sources")
 system2("make", c("sync-cpp"))
 
-cat("Building documentation\n")
+cli::cli_alert_info("Building documentation")
 system2("make", c("doc"))
 
-cat("Running styler\n")
-styler::style_file(setdiff(dir(pattern = "R$", recursive = TRUE), source(".styler_excludes.R")$value))
-cat("Done!\n")
+cli::cli_alert_success("Done!")
