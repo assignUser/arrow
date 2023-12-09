@@ -59,7 +59,7 @@ devtools::install_dev_deps(".", upgrade = "never")
 devtools::install_cran("styler")
 
 cli::cli_alert_info("Removing badges from Readme.md")
-system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
+system2("sed", c("-i", "-e", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d'", "README.md"))
 
 cli::cli_alert_info("Running urlchecker")
 url_res <- urlchecker::url_check()
