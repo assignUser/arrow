@@ -49,7 +49,10 @@ get_checksum_version <- function() {
   version
 }
 
-if (!is_release) {
+cli::cli_alert_info("Vendoring C++ sources")
+system2("make", c("sync-cpp"))
+
+if (!is_release && !force_bootstrap) {
   cli::cli_alert_warning("Skipping releases preparations for dev version.")
   q(save = "no")
 }
@@ -74,9 +77,6 @@ if (!is.na(VERSION)) {
   cli::cli_alert_info("Updating checksums for libarrow version: {VERSION}")
   source("tools/update-checksums.R", local = TRUE)
 }
-
-cli::cli_alert_info("Vendoring C++ sources")
-system2("make", c("sync-cpp"))
 
 cli::cli_alert_info("Building documentation")
 system2("make", c("doc"))
