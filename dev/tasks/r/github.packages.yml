@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-           working-directory: 'arrow'
+           working-directory: 'arrow/r'
            extra-packages: styler
 
       - name: Build R source package
