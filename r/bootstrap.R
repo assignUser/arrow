@@ -24,7 +24,7 @@ if (git_sc != 0) {
 pkg_version <- package_version(desc::desc_get("Version"))
 is_release <- is.na(pkg_version[1, 4]) || pkg_version[1, 4] < "100"
 # for testing and CI
-force_bootstrap <- identical(tolower(Sys.getenv("ARROW_FORCE_BOOTSTRAP", default = "false")), "true")
+force_bootstrap <- identical(tolower(Sys.getenv("ARROW_FORCE_BOOTSTRAP", unset = "false")), "true")
 
 get_checksum_version <- function() {
   url_exists <- function(url) {
@@ -44,7 +44,7 @@ get_checksum_version <- function() {
   if (matching_url) {
     version <- pkg_version[1, 1:3]
   } else {
-    stop("No matching checksums found, can't proceed.")
+    cli::cli_abort("No matching checksums found, can't proceed.")
   }
   version
 }
