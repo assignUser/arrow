@@ -23,6 +23,8 @@ if (git_sc != 0) {
 
 pkg_version <- package_version(desc::desc_get("Version"))
 is_release <- is.na(pkg_version[1, 4]) || pkg_version[1, 4] < "100"
+# for testing and CI
+force_bootstrap <- identical(tolower(Sys.getenv("ARROW_FORCE_BOOTSTRAP", default = "false")), "true")
 
 get_checksum_version <- function() {
   url_exists <- function(url) {
@@ -31,7 +33,7 @@ get_checksum_version <- function() {
   }
   # Run update-checksums.R manually if the checksums already exists
   # but have an unexpected version.
-  if (dir.exists("tools/checksums")) {
+  if (dir.exists("tools/checksums") || force_bootstrap) {
     cli::cli_alert_success("Found existing checksums, skipping download.")
     return(NA)
   }
@@ -61,8 +63,9 @@ system2("sed", c("-i", "'/^<!--- badges: start -->$/,/^<!--- badges: stop -->$/d
 
 cli::cli_alert_info("Running urlchecker")
 url_res <- urlchecker::url_check()
-if (nrow(url_res) > 0) {
-  print(url_res)
+print(url_res)
+
+if (nrow(url_res) > 0 && !force_bootstrap) {
   cli::cli_abort("Broken URLs found, can't proceed.")
 }
 
