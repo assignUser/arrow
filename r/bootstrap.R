@@ -18,7 +18,7 @@
 git_sc <- system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = FALSE, stderr = FALSE)
 if (git_sc != 0) {
   cli::cli_alert_warning("Not in a git repository, skipping bootstrap.R")
-  return()
+  q(save = "no")
 }
 
 pkg_version <- package_version(desc::desc_get("Version"))
@@ -49,7 +49,7 @@ get_checksum_version <- function() {
 
 if (!is_release) {
   cli::cli_alert_warning("Skipping releases preparations for dev version.")
-  return()
+  q(save = "no")
 }
 
 cli::cli_alert_info("Installing dependencies")
