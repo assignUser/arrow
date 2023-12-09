@@ -15,9 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-git_sc <- system2("git", c("rev-parse", "--is-inside-work-tree"), stdout = FALSE, stderr = FALSE)
-if (git_sc != 0) {
-  cli::cli_alert_warning("Not in a git repository, skipping bootstrap.R")
+if (!dir.exists('../cpp')) {
+  cli::cli_alert_warning("Arrow C++ sources not found, skipping bootstrap.")
   q(save = "no")
 }
 
