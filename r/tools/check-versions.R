@@ -20,15 +20,23 @@ args <- commandArgs(TRUE)
 # TESTING is set in test-check-version.R; it won't be set when called from configure
 test_mode <- exists("TESTING")
 
+# r_dev + released cpp: check minimum_cpp
+# released r + released cpp: check minimum_cpp
+# r_dev + dev cpp: check matching major and emit warning
+# released r + dev cpp: could happen for R devs
 check_versions <- function(r_version, cpp_version) {
+  minimum_cpp <- package_version("15.0.0") # addition of ListView and StringView
   r_parsed <- package_version(r_version)
   r_dev_version <- r_parsed[1, 4]
   r_is_dev <- !is.na(r_dev_version) && r_dev_version > "100"
   r_is_patch <- !is.na(r_dev_version) && r_dev_version <= "100"
+  r_clean <- r_parsed[1, 1:3]
   cpp_is_dev <- grepl("SNAPSHOT$", cpp_version)
   cpp_parsed <- package_version(sub("-SNAPSHOT$", "", cpp_version))
 
   major <- function(x) as.numeric(x[1, 1])
+   
+
   # R and C++ denote dev versions differently
   # R is current.release.9000, C++ is next.release-SNAPSHOT
   # So a "match" is if the R major version + 1 = C++ major version
@@ -39,7 +47,9 @@ check_versions <- function(r_version, cpp_version) {
       "*** > or retry with FORCE_BUNDLED_BUILD=true"
     )
     cat(paste0(msg, "\n", collapse = ""))
-  } else if (r_is_patch && as.character(r_parsed[1, 1:3]) == cpp_version) {
+  } else if (cpp_is_dev && cpp_parsed >= minimum_cpp) {
+    cat("blub\n")
+  } else if (r_clean >= cpp_parsed && cpp_parsed >= minimum_cpp) {
     # Patch releases we do for CRAN feedback get an extra x.y.z.1 version.
     # These should work with the x.y.z C++ library (which never has .1 added)
     cat(
@@ -49,21 +59,16 @@ check_versions <- function(r_version, cpp_version) {
         r_version
       )
     )
-  } else if (r_version != cpp_version) {
+  } else {
     cat(
       sprintf(
-        "**** Not using: C++ library version (%s) does not match R package (%s)\n",
-        cpp_version,
-        r_version
+        "**** Incompatible C++ library version (%s) found\n",
+        cpp_version
       )
     )
     stop("version mismatch")
     # Add ALLOW_VERSION_MISMATCH env var to override stop()? (Could be useful for debugging)
-  } else {
-    # OK
-    cat(sprintf("**** C++ and R library versions match: %s\n", cpp_version))
-  }
-}
+  } }
 
 if (!test_mode) {
   check_versions(args[1], args[2])
